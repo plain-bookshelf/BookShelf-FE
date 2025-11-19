@@ -14,7 +14,7 @@ import {
 import { postTokenReissue } from "./authApi";
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: "http://13.124.75.92:8080",
+  baseURL: "http://43.200.3.102:8080",
 });
 
 /** url 정규화 (/api 유무 상관없이 동일 비교) */
