@@ -15,8 +15,10 @@ export interface FindIdVerifyResponse {
 
 // 비회원용 전용 axios 인스턴스
 // 공용 axiosInstance(토큰/인터셉터) 안 타게 분리
+const Server_IP = import.meta.env.VITE_APP_Server_IP;
+
 const publicAxios = axios.create({
-  baseURL: "http://13.124.75.92:8080",
+  baseURL: Server_IP,
   withCredentials: true,
 });
 

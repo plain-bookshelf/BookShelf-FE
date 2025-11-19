@@ -1,5 +1,6 @@
 export const postMessage = async (userName: string, content: string, onChunk?: (text: string) => void) => {
-  const res = await fetch("http://43.202.168.222/chatbot/Bookshelf_AI", {
+  const Server_IP = import.meta.env.VITE_APP_AI_Server_IP;
+  const res = await fetch(`${Server_IP}/chatbot/Bookshelf_AI`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user_id: userName, user_said: content }),

@@ -55,6 +55,7 @@ export default function MyProfile() {
         setOverdueBooks(overdueBook);
 
         setPenalty(res.data.data.user_over_due_date);
+        console.log("로그인 후 userId:", user.id);
       } catch(error) {
         console.log(error)
       }

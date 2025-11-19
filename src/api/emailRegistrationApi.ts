@@ -14,7 +14,7 @@ export async function sendEmailVerification(address: string): Promise<ApiRespons
   const body: EmailSendRequest = { address };
 
   try {
-    const res = await axiosInstance.post<ApiResponse>(`${EMAIL_BASE}/send`, body);
+    const res = await axiosInstance.post<ApiResponse>(`/api${EMAIL_BASE}/send`, body);
 
     if (res.status === 201 || res.data.status === "CREATED") {
       return res.data;
@@ -41,7 +41,7 @@ export async function verifyEmailCode(
   };
 
   try {
-    const res = await axiosInstance.put<EmailVerifyResponse>(`${EMAIL_BASE}/verify`, body);
+    const res = await axiosInstance.put<EmailVerifyResponse>(`/api${EMAIL_BASE}/verify`, body);
 
     if (res.status === 201 || res.data.status === "CREATED") {
       return res.data;

@@ -24,8 +24,8 @@ export default function Router() {
       <Routes>
         <Route path="/" element={<Layout />}> 
           <Route index element={<Main />} />
-          <Route path="/My" element={<My />} />
-          <Route path="/Login" element={<Login/>}/>
+          <Route path="/my" element={<My />} />
+          <Route path="/login" element={<Login/>}/>
           <Route path="/emailRegistration" element={<EmailRegistration/>}/>
           <Route path="/signup" element={<Signup/>}/>
           <Route path="/idPasswordFind" element={<IdPasswordFind/>}/>
@@ -37,7 +37,7 @@ export default function Router() {
           <Route path="/showPw" element={<ShowPw/>}/>
           <Route path="/MyPwReset" element={<MyPwReset/>}/>
           <Route path="/recommand" element={<RecommandList />} />
-          <Route path="/AI" element={<ChatBot />} />
+          <Route path="/ai" element={<ChatBot />} />
           <Route path="allow" element={<AllowList />} />
           <Route path="list" element={<BorrowList />} />
         </Route>

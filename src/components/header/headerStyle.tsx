@@ -17,15 +17,16 @@ export const Logo = styled.img`
 `
 
 export const PageContent = styled.div`
-  width: 526px;
+  width: 513px;
   height: 47px;
   margin-top: 24px;
   margin-bottom: 25px;
   margin-left: 55px;
   margin-right: 425px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center; 
+  gap: 75px;
 `
 
 export const BookRequest = styled.a`
@@ -44,6 +45,7 @@ export const FindFavoriteBooks = styled.a`
   width: 156px;
   height: 27px;
 
+  font-size: 18px;
   font-weight: 700;
   color: black;
   text-decoration: none;
@@ -55,6 +57,7 @@ export const FindFavoriteBooks = styled.a`
 export const MyPage = styled.a`
   width: 100px;
   height: 27px;
+  font-size: 18px;
   font-weight: 700;
   color: black;
   text-decoration: none;

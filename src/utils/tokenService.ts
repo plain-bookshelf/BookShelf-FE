@@ -1,9 +1,9 @@
-const ACCESS_TOKEN_KEY = "access_token";
+export const ACCESS_TOKEN_KEY = "access_token";
 const REFRESH_TOKEN_KEY = "refresh_token";
 const EXPIRES_AT_KEY = "access_token_expires_at"; // number (ms)
 
 // const storage = window.sessionStorage; //바꾸면 sessionStorage 사용
- const storage = window.localStorage; 
+ export const storage = window.localStorage; 
 
 export interface TokenPayload {
   access_token: string;

@@ -36,22 +36,19 @@ function Header() {
       />
 
       <S.PageContent>
-        <S.BookRequest onClick={() => handleProtectedNav("/temp")}>
-          도서신청
-        </S.BookRequest>
         <S.FindFavoriteBooks onClick={() => handleProtectedNav("/recommand")}>
           내 취향 도서 찾기
         </S.FindFavoriteBooks>
-        <S.MyPage onClick={() => handleProtectedNav("/My")}>
+        <S.MyPage onClick={() => handleProtectedNav("/my")}>
           마이페이지
         </S.MyPage>
-        <S.AiPage onClick={() => handleProtectedNav("/Ai")}>
+        <S.AiPage onClick={() => handleProtectedNav("/ai")}>
           마루 Ai
         </S.AiPage>
       </S.PageContent>
 
       {isLoggedIn ? (
-        <S.ProfileWrapper onClick={() => navigate("/My")}>
+        <S.ProfileWrapper onClick={() => navigate("/my")}>
           <S.ProfileAvatar
             src={user.img || defaultUserIcon}
             alt={user.nickName || user.name || "user-profile"}

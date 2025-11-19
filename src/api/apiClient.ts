@@ -13,8 +13,9 @@ import {
 } from "../utils/tokenService";
 import { postTokenReissue } from "./authApi";
 
+const Server_IP = import.meta.env.VITE_APP_Server_IP;
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: "http://43.200.3.102:8080",
+  baseURL: Server_IP,
 });
 
 /** url 정규화 (/api 유무 상관없이 동일 비교) */
@@ -36,7 +37,10 @@ const isPublicUrl = (url?: string): boolean => {
   return (
     pure.startsWith("/auth/login") ||
     pure.startsWith("/auth/reissue") ||
-    pure.startsWith("/public")
+    pure.startsWith("/public") ||
+    pure.startsWith("/api/email/send") ||
+    pure.startsWith("/api/email/verify") ||
+    pure.startsWith("/api/auth/signup")
   );
 };
 
