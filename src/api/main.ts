@@ -7,4 +7,3 @@ export const getMain = async () => {
 export const getBookSearch = async (query: string) => {
   return await axiosInstance.get(`/api/search?keyword=${query}`)
 }
-

@@ -16,7 +16,8 @@ function Header() {
 
   useEffect(() => {
     setIsLoggedIn(!!getAccessToken());
-  }, [location.pathname]);
+  
+  },[location.pathname]);
 
   const handleProtectedNav = (path: string) => {
     if (!isLoggedIn) {

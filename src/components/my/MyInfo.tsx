@@ -31,6 +31,7 @@ export default function MyProfile() {
   }, [user.nickName])
 
   useEffect(() => {
+
     const fetchData = async () => {
       try{
         console.log("정보 가져오는 중");
@@ -62,7 +63,7 @@ export default function MyProfile() {
     }
 
     fetchData();
-  }, [])
+  }, [user.id])
 
   const userEditInfo = async () => {
     setEditModal(true);
