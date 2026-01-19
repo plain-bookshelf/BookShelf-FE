@@ -21,11 +21,10 @@ const pickMessage = (err: AxiosError) => {
   return apiMsg || "도서 대여 요청 중 오류가 발생했습니다.";
 };
 
-/**
- * 도서 대여 (명세 준수)
+/**도서 대여
  * PATCH /api/book/rental?registrationNumber=...
  * 본 함수는 로컬 상태를 절대 변경하지 않음. (UI 갱신은 호출부에서 refetch)
- */
+ */ 
 export async function requestBookRental(
   registrationNumber: string
 ): Promise<ApiEnvelope<string>> {

@@ -28,6 +28,7 @@ export interface BookDetailData {
 
 export interface Comment {
   id: number | string;
+  // comment: number | string;
   user: string;
   text: string;
   date: string;

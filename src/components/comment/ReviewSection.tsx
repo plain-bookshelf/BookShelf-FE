@@ -16,7 +16,7 @@ interface ReviewSectionProps {
 const isTempId = (id: string | number) => typeof id === 'string' && id.startsWith('temp-');
 
 const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
-  const { user, setUser } = useUser();            // ✅ 전역 유저 정보(Context)
+  const { user, setUser } = useUser();            // 전역 유저 정보(Context)
   const [comments, setComments] = useState<Comment[]>([]);
   const [likedCommentIds, setLikedCommentIds] = useState<(number | string)[]>([]);
 
@@ -39,21 +39,24 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
       }
     };
     syncMyInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
-  // 🔹 댓글 작성
+  // 댓글 작성
   const handleAddComment = async (newText: string) => {
-    const trimmed = newText.trim();
-    if (!trimmed) return;
+  const trimmed = newText.trim();
+  if (!trimmed) return;
 
-    try {
-      const res = await postCommentWrite(bookId, trimmed);
-      console.log('댓글 작성 성공:', res);
+  try {
+    const res = await postCommentWrite(bookId, trimmed);
 
-      // 작성 응답에 commentId가 없으므로 임시 ID 사용(좋아요/삭제 가드와 함께)
+    const commentIdFromServer = typeof res.data === "number"
+        ? res.data
+        : (res.data as any)?.commentId; 
+
+    if (commentIdFromServer) {
+      // commentId를 받았으면 바로 추가 (temp-id 필요없음)
       const newComment: Comment = {
-        id: `temp-${Date.now()}`,
+        id: commentIdFromServer,
         userId: user.id,
         user: user.nickName || user.name,
         text: trimmed,
@@ -63,13 +66,17 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
       };
 
       setComments(prev => [newComment, ...prev]);
-    } catch (e: any) {
-      console.error('댓글 작성 실패:', e);
-      alert(e.message || '댓글 작성 중 오류가 발생했습니다.');
+      return;
     }
-  };
 
-  // 🔹 좋아요 토글
+  } catch (e: any) {
+    console.error("댓글 작성 실패:", e);
+    alert(e.message || "댓글 작성 중 오류가 발생했습니다.");
+  }
+};
+
+
+  // 좋아요 토글
   const handleToggleLike = async (commentId: string | number) => {
     if (isTempId(commentId)) {
       alert('방금 작성한 댓글은 서버 동기화 후 좋아요가 가능합니다. 새로고침 후 이용해주세요.');
@@ -81,7 +88,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
 
     const oldLikes = target.likes;
 
-    // 1️⃣ UI 낙관적 업데이트
+    //  UI 낙관적 업데이트
     setLikedCommentIds(prev =>
       isCurrentlyLiked ? prev.filter(id => id !== commentId) : [...prev, commentId],
     );
@@ -93,7 +100,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
       ),
     );
 
-    // 2️⃣ 서버 요청
+    // 서버 요청
     try {
       const res = await postCommentLike(commentId);
       if (res.data !== true) throw new Error('좋아요 처리 결과를 확인할 수 없습니다.');
@@ -101,7 +108,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
       console.error('좋아요 요청 실패, 롤백:', e);
       alert(e.message || '좋아요 처리 중 오류가 발생했습니다.');
 
-      // 3️⃣ 롤백
+      //롤백
       setLikedCommentIds(prev =>
         isCurrentlyLiked ? [...prev, commentId] : prev.filter(id => id !== commentId),
       );
@@ -109,7 +116,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
     }
   };
 
-  // 🔹 댓글 삭제
+  //  댓글 삭제
   const onDeleteComment = async (commentId: string | number) => {
     if (isTempId(commentId)) {
       alert('방금 작성한 댓글은 서버 동기화 후 삭제가 가능합니다. 새로고침 후 이용해주세요.');
@@ -119,19 +126,19 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
 
     const originalComments = [...comments];
     try {
-      // 1️⃣ UI에서 먼저 제거
+      //  UI에서 먼저 제거
       setComments(prev => prev.filter(c => c.id !== commentId));
 
-      // 2️⃣ 서버 호출
+      //  서버 호출
       await deleteComment(commentId);
       alert('댓글이 성공적으로 삭제되었습니다.');
 
-      // 3️⃣ 좋아요 목록에서도 제거
+      //  좋아요 목록에서도 제거
       setLikedCommentIds(prevIds => prevIds.filter(id => id !== commentId));
     } catch (e: any) {
       console.error('댓글 삭제 중 오류 발생 - 롤백:', e);
       alert(e.message || '댓글 삭제 중 오류가 발생했습니다.');
-      setComments(originalComments); // 4️⃣ 롤백
+      setComments(originalComments); // 롤백
     }
   };
 

@@ -25,7 +25,7 @@ export function InfoBox(info: BorrowAllow) {
     allowData(info);
 
     try {
-      console.log("책 대요 요청 승인 중");
+      console.log("책 대여 요청 승인 중");
       await patchRentalAllow(info.registration_number);
     } catch (error) {
       console.log(error);

@@ -11,9 +11,7 @@ export const Container = styled.div`
 
 export const Logo = styled.img`
   margin-left: 240px;
-  &:hover{
-    cursor: pointer;
-  }
+  cursor: pointer;
 `
 
 export const PageContent = styled.div`
@@ -112,9 +110,9 @@ export const SignUpContent = styled.div`
   }
 `
 
-export const LogInText = styled.a`
-  width: 70px;
-  height: 24px;
+export const LogInImg = styled.img`
+  width: 48px;
+  height: 48px;
   color: #00C471; 
   text-decoration: none;
 `
