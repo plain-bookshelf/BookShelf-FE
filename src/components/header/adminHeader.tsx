@@ -36,8 +36,8 @@ function Header() {
       />
 
       <S.PageContent>
-        <S.PageText onClick={() => handleProtectedNav("/temp")}>대여 승인</S.PageText>
-        <S.PageText onClick={() => handleProtectedNav("/recommand")}>
+        <S.PageText onClick={() => handleProtectedNav("/allow")}>대여 승인</S.PageText>
+        <S.PageText onClick={() => handleProtectedNav("/list")}>
           대여 목록
         </S.PageText>
       </S.PageContent>
