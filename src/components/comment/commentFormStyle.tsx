@@ -45,12 +45,12 @@ export const SubmitButtonContent = styled.div`
 export const SubmitButton = styled.button`
   width: 120px;
   
-  background-color: #00C471;
+  background-color: ${({disabled}) => (disabled ? "#CCCCCC" : "#00C471")} ;
   color: white;
   border: none;
   padding: 10px 20px;
   border-radius: 4px;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
   font-weight: bold;
 
   &:hover {

@@ -5,15 +5,19 @@ import noneSee from "../../assets/noneSee.png"
 import see from "../../assets/see.png"
 import {type PwResetProps} from "../../types/pwResetTypes"
 import danger from "../../assets/danger.png"
+import user from "../../assets/user.svg"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 export function PwResetInput({
+  username,
   newPassword, 
   confirmPassword, 
-  isLoading, 
+  isLoading,
+  usernameError, 
   newPasswordError, 
-  confirmPasswordError, 
+  confirmPasswordError,
+  handleUsernameChange, 
   handlePasswordChange, 
   handleConfirmPasswordChange, 
   onSubmit 
@@ -32,6 +36,9 @@ export function PwResetInput({
       onSubmit()
   }
 
+  const hasUsernameError = !!usernameError
+  const hasUsernameValue = username.length > 0
+
   const hasNewPasswordError = !!newPasswordError
   const hasNewPasswordValue = newPassword.length > 0
   
@@ -48,6 +55,24 @@ export function PwResetInput({
             <S.SubTitle>비밀번호를 재설정해주세요</S.SubTitle>
           </S.TextContent>
           <S.InputContent>
+               <S.PasswordInputContainer>
+              <S.PasswordInputTextContent>
+                <img src={user}/>
+                <S.PasswordInputText>아이디</S.PasswordInputText>
+              </S.PasswordInputTextContent>
+              <S.PasswordInputContent hasError={hasUsernameError} hasValue={hasUsernameValue}>
+                <S.PasswordInput 
+                type= "text"
+                placeholder="아이디를 다시 입력해 주세요"
+                value={username}
+                onChange={(e) => handleUsernameChange(e.target.value)}></S.PasswordInput>
+              </S.PasswordInputContent>
+            </S.PasswordInputContainer>
+              {usernameError && 
+              <S.ErrorMessageContent>
+                <img src={danger}/>
+                <S.ErrorMessage>{usernameError}</S.ErrorMessage>
+              </S.ErrorMessageContent>} 
             <S.PasswordInputContainer>
               <S.PasswordInputTextContent>
                 <img src={lock}/>
@@ -94,7 +119,7 @@ export function PwResetInput({
                 <img src={danger}/>
                 <S.ErrorMessage>{confirmPasswordError}</S.ErrorMessage>
               </S.ErrorMessageContent>} 
-            <S.NextButton onClick={handleSubmit} disabled={isLoading}>확인</S.NextButton>
+            <S.NextButton type="submit" disabled={isLoading}>확인</S.NextButton>
           </S.InputContent>
         </S.Content>
       </S.Container>

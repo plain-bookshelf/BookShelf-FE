@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   width: 620px;
-  height: 590px;
+  height: 800px;
   
   border: 1px solid #E7E7E7;
   box-shadow: 1px 1px 10px #E7E7E7;
@@ -15,7 +15,7 @@ export const Container = styled.div`
 
 export const  Content = styled.div`
   width: 500px;
-  height: 500px;
+  height: 650px;
 
   display: flex;
   flex-direction: column;
@@ -46,7 +46,7 @@ export const SubTitle = styled.p`
 
 export const InputContent = styled.div`
   width: 500px;
-  height: 330px;
+  height: 465px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -164,6 +164,7 @@ export const SeeButton = styled.img<SeeButtonProps>`
 export const NextButton = styled.button`
   width: 500px;
   height: 55px;
+  margin-top: 10px;
   background-color: #00C471;
   border: none;
   color: white;

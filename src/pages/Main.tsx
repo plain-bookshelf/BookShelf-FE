@@ -1,20 +1,21 @@
-import SearchBar from "../components/searchBar/SearchBar"
-import * as B from "../components/book/Book"
+import SearchBar from "../components/SearchBar/SearchBar"
+import * as B from "../components/Book/Book"
 import type { Book, SearchBook } from "../types/Book"
 import { useEffect, useState } from "react"
-import { Line, LineContainer } from "../components/book/style"
+import { Line, LineContainer } from "../components/Book/style"
 import styled from "styled-components"
 import searchResult from "../assets/searchResult.png"
 import { getBookSearch, getMain } from "../api/main"
 import { useUser } from "../components/contexts/UserContext"
 import Loading from "../components/loading/loading"
+import { setUserId } from "../utils/tokenService"
 
 export default function Main() {
   const { user, setUser } = useUser();
   const [searchBookList, setSearchBookList] = useState<SearchBook[]>([]);
   const [popularBookList, setPopularBookList] = useState<Book[]>([]);
   const [newBookList, setNewBookList] = useState<Book[]>([]);
-  const [search, setSearch] = useState<Boolean>(false);
+  const [search, setSearch] = useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
@@ -26,6 +27,8 @@ export default function Main() {
         setPopularBookList(res.data.data.book_popularity_list_response_dto);
         setNewBookList(res.data.data.book_recent_list_response_dto);
         setUser({...user, img: res.data.data.profile, id: res.data.data.member_id});
+        
+        setUserId(user.id);
         setLoading(false);
       } catch(error) {
         console.error(error);

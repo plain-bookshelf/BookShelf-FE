@@ -1,6 +1,7 @@
 export const ACCESS_TOKEN_KEY = "access_token";
 const REFRESH_TOKEN_KEY = "refresh_token";
 const EXPIRES_AT_KEY = "access_token_expires_at"; // number (ms)
+const USER_ID_KEY = "user_id";
 
 // const storage = window.sessionStorage; //바꾸면 sessionStorage 사용
  export const storage = window.localStorage; 
@@ -49,6 +50,14 @@ export function getAccessTokenExpiresAt(): number | null {
   return raw ? Number(raw) : null;
 }
 
+export function setUserId(id: string){
+  storage.setItem(USER_ID_KEY, id);
+}
+
+export function getUserId(): string{
+  return storage.getItem(USER_ID_KEY) ??  "";
+}
+
 export function isAccessTokenExpired(): boolean {
   const exp = getAccessTokenExpiresAt();
   if (!exp) return false;
@@ -59,4 +68,5 @@ export function removeTokens() {
   storage.removeItem(ACCESS_TOKEN_KEY);
   storage.removeItem(REFRESH_TOKEN_KEY);
   storage.removeItem(EXPIRES_AT_KEY);
+  storage.removeItem(USER_ID_KEY);
 }

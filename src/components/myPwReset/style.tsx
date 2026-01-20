@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const Container = styled.div`
   width: 620px;
-  height: 745px;
+  height: 872px;
   
   border: 1px solid #E7E7E7;
   box-shadow: 1px 1px 10px #E7E7E7;
@@ -15,7 +15,7 @@ export const Container = styled.div`
 
 export const  Content = styled.div`
   width: 500px;
-  height: 630px;
+  height: 760px;
 
   display: flex;
   flex-direction: column;
@@ -46,7 +46,7 @@ export const SubTitle = styled.p`
 
 export const InputContent = styled.div`
   width: 500px;
-  height: 440px;
+  height: 580px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

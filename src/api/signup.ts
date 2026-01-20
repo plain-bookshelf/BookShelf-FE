@@ -2,7 +2,7 @@ import axios from "axios";
 import axiosInstance from "./apiClient";
 import type { signupRequest, signupResponse, apiResponse } from "../types/signupTypes";
 
-const SIGNUP_ENDPOINT = "/auth/signup";
+const SIGNUP_ENDPOINT = "/api/auth/signup";
 
 export async function signup(data: signupRequest): Promise<signupResponse> {
   try {

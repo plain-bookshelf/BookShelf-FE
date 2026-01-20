@@ -78,7 +78,7 @@ export const postCommentLike = async (
   try {
     const res = await axiosInstance.post<CommentLikeResponse>(
       `${COMMENT_BASE}/like`,
-      {}, // 스펙: 빈 JSON 바디
+      {},
       {
         params: { commentId },
         headers: { "Content-Type": "application/json" },

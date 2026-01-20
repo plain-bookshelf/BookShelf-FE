@@ -5,23 +5,20 @@ interface CommentFormProps {
   onAddComment: (text: string) => void;
 }
 
+const MAX_LENGTH = 225;
+
 const CommentForm: React.FC<CommentFormProps> = ({ onAddComment }) => {
   const [commentText, setCommentText] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (commentText.trim().length === 0) return;
+
     onAddComment(commentText);
     setCommentText('');
   };
-// 임시로 막아둔 코드 기능
-//   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-//     // 조건: 눌린 키가 'Enter'이라면
-//     if (e.key === 'Enter') { 
-//         // 코드 블록: 위의 조건이 참일 경우에만 실행
-//         e.preventDefault(); // 폼 제출을 막아 줄바꿈만 가능하게 함
-//     }
-//     // ...
-// };
+
+  const isDisabled = commentText.trim().length === 0 || commentText.length > MAX_LENGTH;
 
 
   return (
@@ -32,11 +29,12 @@ const CommentForm: React.FC<CommentFormProps> = ({ onAddComment }) => {
         <S.CommentTextArea
           placeholder="댓글를 작성해 주세요..."
           value={commentText}
+          maxLength={MAX_LENGTH}
           onChange={(e) => setCommentText(e.target.value)}
           required
         />
         <S.SubmitButtonContent>
-          <S.SubmitButton type="submit">작성</S.SubmitButton>
+          <S.SubmitButton type="submit" disabled={isDisabled}>작성</S.SubmitButton>
         </S.SubmitButtonContent>
       </form>
       </S.FormContainer>

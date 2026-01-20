@@ -1,5 +1,5 @@
 import * as S from "./style";
-import user from '../../assets/user.svg';
+import user from '../../assets/deleteUser.png';
 import lock from '../../assets/lock.png';
 import noneSee from '../../assets/noneSee.png';
 import see from '../../assets/see.png';

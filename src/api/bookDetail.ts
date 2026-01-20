@@ -1,6 +1,7 @@
 import type { BookDetailData, CollectionItem } from "../types/bookTypes";
 import axiosInstance from "./apiClient";
 import { getAccessToken } from "../utils/tokenService";
+import undefindImg from "../assets/undefindImg.png";
 import axios from "axios";
 
 interface CollectionInfoDto {
@@ -24,7 +25,7 @@ interface BookDetailApiData {
 }
 
 interface BookDetailApiResponse {
-  status: string; // "OK"
+  status: string;
   message: string;
   data: BookDetailApiData;
 }
@@ -44,7 +45,7 @@ const mapToBookDetailData = (data: BookDetailApiData): BookDetailData => {
   return {
     bookId: data.book_id,
     title: data.book_name,
-    coverImage: data.book_image_url ?? "/images/default-book-cover.png",
+    coverImage: data.book_image_url ?? undefindImg,
     author: "",
     publisher: data.publisher ?? "",
     pubYear: data.book_date ? Number(data.book_date.slice(0, 4)) : undefined,

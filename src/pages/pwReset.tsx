@@ -1,11 +1,11 @@
-
 import PwResetInput from "../components/pwReset/pwResetInput";
 import { PageWrapper } from "../layouts/pageWrapper";
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import { resetPasswordByFind } from "../api/pwReset";
 
 interface ErrorsState {
+  username: string;
   newPassword: string;
   confirmPassword: string;
 }
@@ -13,27 +13,24 @@ interface ErrorsState {
 export default function PwReset() {
   const ASCII_REGEX = /[^\x20-\x7F]/g;
   const ASCII_ERROR_MESSAGE = "영문, 숫자, 일반 특수문자만 입력 가능합니다.";
-
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [errors, setErrors] = useState<ErrorsState>({
+    username: "",
     newPassword: "",
     confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
 
-  // 이메일 인증 단계에서 넘겨준 식별값 (username or email)
-  const username: string | undefined =
-    location.state?.username || location.state?.email;
 
   // 입력 변경 시 필드별 유효성 검사
   const handleInputChangeValidation = (
     key: keyof ErrorsState,
-    value: string,
-  ) => {
+    value: string) => {
     let newError = "";
 
     // 1. ASCII 범위 외 문자 체크
@@ -42,7 +39,11 @@ export default function PwReset() {
     }
 
     // 2. 필드별 유효성 검사
-    if (key === "newPassword") {
+    if(key === "username"){
+      if(!value.trim()){
+        newError = newError || "아이디를 입력하세요";
+      }
+    }else if (key === "newPassword") {
       if (!value.trim()) {
         newError = newError || "비밀번호를 입력하세요";
       } else if (value.length < 8) {
@@ -62,6 +63,11 @@ export default function PwReset() {
     }));
   };
 
+  const handleUsernameChange = (value: string) => {
+    setUsername(value);
+    handleInputChangeValidation("username", value);
+  };
+  
   const handlePasswordChange = (value: string) => {
     setNewPassword(value);
     handleInputChangeValidation("newPassword", value);
@@ -77,22 +83,20 @@ export default function PwReset() {
   };
 
   const handlePwReset = async () => {
-    // 이메일 인증 없이 직접 들어오는 경우 방어
-    if (!username) {
-      alert("비정상적인 접근입니다. 처음부터 다시 진행해주세요.");
-      navigate("/idPasswordFind");
-      return;
-    }
 
     // 에러 초기화
-    setErrors({ newPassword: "", confirmPassword: "" });
+    setErrors({ username: "", newPassword: "", confirmPassword: "" });
 
     const newErrors: ErrorsState = {
+      username: "",
       newPassword: "",
       confirmPassword: "",
     };
 
     // 1. ASCII 체크
+    if (ASCII_REGEX.test(username)) {
+      newErrors.username = ASCII_ERROR_MESSAGE;
+    }
     if (ASCII_REGEX.test(newPassword)) {
       newErrors.newPassword = ASCII_ERROR_MESSAGE;
     }
@@ -101,6 +105,10 @@ export default function PwReset() {
     }
 
     // 2. 기본 유효성 검사
+    if (!username.trim()){
+      newErrors.username = newErrors.username || "아이디를 입력하세요";
+    }
+
     if (!newPassword.trim()) {
       newErrors.newPassword =
         newErrors.newPassword || "비밀번호를 입력하세요";
@@ -118,7 +126,7 @@ export default function PwReset() {
     }
 
     // 에러 있으면 종료
-    if (newErrors.newPassword || newErrors.confirmPassword) {
+    if (newErrors.username || newErrors.newPassword || newErrors.confirmPassword) {
       setErrors(newErrors);
       return;
     }
@@ -135,7 +143,7 @@ export default function PwReset() {
       navigate("/showPw", {
         state: { resetPassword: newPassword },
       });
-    } catch (err: any) {
+    } catch (err) {
       console.error("비밀번호 재설정 중 오류 발생", err);
 
       let message = "비밀번호 재설정 중 오류가 발생했습니다.";
@@ -164,11 +172,14 @@ export default function PwReset() {
   return (
     <PageWrapper>
       <PwResetInput
+        username={username}
         newPassword={newPassword}
         confirmPassword={confirmPassword}
         isLoading={isLoading}
+        usernameError={errors.username}
         newPasswordError={errors.newPassword}
         confirmPasswordError={errors.confirmPassword}
+        handleUsernameChange={handleUsernameChange}
         handlePasswordChange={handlePasswordChange}
         handleConfirmPasswordChange={handleConfirmPasswordChange}
         onSubmit={handlePwReset}

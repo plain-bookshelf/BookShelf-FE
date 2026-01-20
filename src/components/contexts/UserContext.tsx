@@ -1,6 +1,7 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import type { UserContextType, UserInfo } from "../../types/User";
+import { getUserId } from "../../utils/tokenService";
 
 export const UserContext = createContext<UserContextType>({ user: {id: "", name: "" ,nickName: "", img:"", email: ""}, setUser: () => {} });
 
@@ -9,6 +10,13 @@ export const Provider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserInfo>({ id: "", name: "" ,nickName: "", img: "", email: "" });
 
   const updateUser = (newData: UserInfo) => setUser(newData);
+
+    useEffect(() => {
+    const storedId = getUserId();
+    if (!storedId) return;
+
+    setUser((prev) => ({ ...prev, id: storedId }));
+  }, []);
 
   return(
     <>

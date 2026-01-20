@@ -37,7 +37,10 @@ const isPublicUrl = (url?: string): boolean => {
   return (
     pure.startsWith("/auth/login") ||
     pure.startsWith("/auth/reissue") ||
-    pure.startsWith("/public")
+    pure.startsWith("/public") ||
+    pure.startsWith("/api/email/send") ||
+    pure.startsWith("/api/email/verify") ||
+    pure.startsWith("/api/auth/signup")
   );
 };
 

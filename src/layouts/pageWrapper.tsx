@@ -4,5 +4,7 @@ export const PageWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 800px;
+  min-height: 750px;
+  flex: 1;
+  padding: 3vw;
 `

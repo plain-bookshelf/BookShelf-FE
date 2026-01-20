@@ -31,6 +31,7 @@ export default function MyProfile() {
   }, [user.nickName])
 
   useEffect(() => {
+
     const fetchData = async () => {
       try{
         console.log("정보 가져오는 중");
@@ -55,13 +56,14 @@ export default function MyProfile() {
         setOverdueBooks(overdueBook);
 
         setPenalty(res.data.data.user_over_due_date);
+        console.log("로그인 후 userId:", user.id);
       } catch(error) {
         console.log(error)
       }
     }
 
     fetchData();
-  }, [])
+  }, [user.id])
 
   const userEditInfo = async () => {
     setEditModal(true);
@@ -219,7 +221,7 @@ export default function MyProfile() {
                 </S.EditInputBox>}
                 <S.EditInputBox>
                   <S.EditInputTitle><img src={lock} />비밀번호</S.EditInputTitle>
-                  <S.EditBox onClick={() => navigate("/idPasswordFind")}>
+                  <S.EditBox onClick={() => navigate("/myPwReset")}>
                     <S.EditInput
                       readOnly
                       allow={true}

@@ -1,11 +1,12 @@
 import * as S from "./headerStyle";
 import headerLogo from "../../assets/headerLogo.svg";
 import defaultUserIcon from "../../assets/user.svg";
-import home from "../../assets/home.png";
+// import home from "../../assets/home.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAccessToken } from "../../utils/tokenService";
 import { useUser } from "../contexts/UserContext";
+// import LogIn from "../../pages/logIn";
 
 function Header() {
   const navigate = useNavigate();
@@ -16,14 +17,10 @@ function Header() {
 
   useEffect(() => {
     setIsLoggedIn(!!getAccessToken());
-  }, [location.pathname]);
+  
+  },[location.pathname]);
 
   const handleProtectedNav = (path: string) => {
-    if (!isLoggedIn) {
-      alert("로그인 후 이용할 수 있는 메뉴입니다.");
-      navigate("/login");
-      return;
-    }
     navigate(path);
   };
 
@@ -56,13 +53,12 @@ function Header() {
         </S.ProfileWrapper>
       ) : (
         <S.TextContent>
-          <S.SignUpContent onClick={() => navigate("/emailRegistration")}>
+          {/* <S.SignUpContent onClick={() => navigate("/emailRegistration")}>
             <img src={home} alt="home-icon" />
             <S.SignUpText>회원가입</S.SignUpText>
-          </S.SignUpContent>
+          </S.SignUpContent> */}
           <S.LogInContent onClick={() => navigate("/login")}>
-            <img src={defaultUserIcon} alt="user-icon" />
-            <S.LogInText>로그인</S.LogInText>
+            <S.LogInImg src={defaultUserIcon} alt="user-icon" />
           </S.LogInContent>
         </S.TextContent>
       )}

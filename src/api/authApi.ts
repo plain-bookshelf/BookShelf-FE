@@ -46,7 +46,7 @@ export const postLogin = async (
 
 //토큰 재발급: POST /api/auth/reissue
 export const postTokenReissue = async (): Promise<TokenReissueResponseData> => {
-  const Server_IP = import.meta.env.REACT_APP_Server_IP;
+  const Server_IP = import.meta.env.VITE_APP_Server_IP;
   const accessToken = getAccessToken();
   const refreshToken = getRefreshToken();
 

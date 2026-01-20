@@ -75,7 +75,7 @@ export const resetPasswordByFind = async (
   try {
     const res = await axiosInstance.patch<BaseResponse>(
       "/api/auth/find-password/retouch",
-      { username, password: newPassword },
+      { username: username, password: newPassword },
       { headers: { "Content-Type": "application/json" } }
     );
 
