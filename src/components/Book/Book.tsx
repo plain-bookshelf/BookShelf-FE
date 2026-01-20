@@ -96,7 +96,7 @@ export function Book({book_name, book_type, book_image_url, author}: Book) {
   </>)
 }
 
-export function Popular({book_name, book_type, book_image_url, author, rank}: Book) {
+export function Popular({book_name, book_type, book_image_url, author, rank, onClick}: Book) {
   const book_type_split = book_type.split(">");
   let category = book_type_split[book_type_split.length-1];
   if(category.length> 8){
@@ -120,7 +120,7 @@ export function Popular({book_name, book_type, book_image_url, author, rank}: Bo
   }
 
   return(<>
-    <S.Book>
+    <S.Book onClick={onClick}>
       <img style={{height: 300}} src={book_image_url}/>
       <S.RankBox>
         <BookNumber style={{margin: 0}}>{rank}</BookNumber>
