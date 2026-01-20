@@ -31,15 +31,17 @@ export default function AllowList() {
     <>
       <Container>
         <CategoryBox />
-        {manageData.map((e) => (
-          <InfoBox
-            book_name={e.book_name}
-            registration_number={e.registration_number}
-            nick_name={e.nick_name}
-            request_date={e.request_date}
-            allow={e.allow}
-          />
-        ))}
+        <BookContinaer>
+          {manageData.map((e) => (
+            <InfoBox
+              book_name={e.book_name}
+              registration_number={e.registration_number}
+              nick_name={e.nick_name}
+              request_date={e.request_date}
+              allow={e.allow}
+            />
+          ))}
+        </BookContinaer>
       </Container>
       <PaginationBar 
         pageCount={pageCount}
@@ -55,4 +57,10 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+`
+
+const BookContinaer = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-height: 249px;
 `
