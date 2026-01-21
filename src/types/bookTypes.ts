@@ -24,6 +24,7 @@ export interface BookDetailData {
   registrationId: string;
   releaseDate: string;
   collection: CollectionItem[];
+  review_response_dtos: Comment[];
 }
 
 export interface Comment {

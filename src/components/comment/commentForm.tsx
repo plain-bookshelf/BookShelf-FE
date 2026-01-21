@@ -6,7 +6,7 @@ interface CommentFormProps {
   disabled?: boolean;
 }
 
-const MAX_LENGTH = 200;
+const MAX_LENGTH = 225;
 
 const CommentForm: React.FC<CommentFormProps> = ({ onAddComment, disabled = false }) => {
   const [commentText, setCommentText] = useState('');
@@ -14,17 +14,13 @@ const CommentForm: React.FC<CommentFormProps> = ({ onAddComment, disabled = fals
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (disabled) return;
+    if (commentText.trim().length === 0) return;
 
-    const trimmed = commentText.trim();
-    if (!trimmed) return;
-
-    await Promise.resolve(onAddComment(trimmed));
+    await Promise.resolve(onAddComment(commentText));
     setCommentText('');
   };
 
-  const isTooLong = commentText.length > MAX_LENGTH;
-  const isEmpty = commentText.trim().length === 0;
-  const isDisabled = disabled || isEmpty || isTooLong;
+  const isDisabled = disabled || commentText.trim().length === 0 || commentText.length > MAX_LENGTH;
 
   return (
     <S.FormWrapper>
@@ -32,7 +28,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ onAddComment, disabled = fals
         <h3>댓글 쓰기</h3>
         <form onSubmit={handleSubmit}>
           <S.CommentTextArea
-            placeholder={disabled ? "로그인 후 댓글을 작성할 수 있어요." : "댓글을 작성해 주세요..."}
+            placeholder={disabled ? '로그인 후 댓글을 작성할 수 있어요.' : '댓글을 작성해 주세요...'}
             value={commentText}
             maxLength={MAX_LENGTH}
             onChange={(e) => setCommentText(e.target.value)}
@@ -40,9 +36,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ onAddComment, disabled = fals
             disabled={disabled}
           />
           <S.SubmitButtonContent>
-            <S.SubmitButton type="submit" disabled={isDisabled}>
-              작성
-            </S.SubmitButton>
+            <S.SubmitButton type="submit" disabled={isDisabled}>작성</S.SubmitButton>
           </S.SubmitButtonContent>
         </form>
       </S.FormContainer>

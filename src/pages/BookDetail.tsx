@@ -9,6 +9,7 @@ import { getBookDetail } from '../api/bookDetail';
 import { requestBookRental } from '../api/bookApi';
 import { getAccessToken } from '../utils/tokenService';
 import { reserveBook } from '../api/bookApi';
+
 /** 서버 진실 기반 상세 페이지 */
 export default function BookDetail() {
   const { bookId } = useParams<{ bookId: string }>();
@@ -93,24 +94,24 @@ export default function BookDetail() {
     }
 
     try {
-    setActionLoading(true);
-    if (action === 'loan') {
-      const res = await requestBookRental(itemId);
-      await refetchDetail();
-      alert(res.message || '성공적으로 대출되었습니다.');
+      setActionLoading(true);
+      if (action === 'loan') {
+        const res = await requestBookRental(itemId);
+        await refetchDetail();
+        alert(res.message || '성공적으로 대출되었습니다.');
+      }
+      else if (action === 'reserve') {
+        const res = await reserveBook(itemId);
+        await refetchDetail();
+        alert(res.message || '성공적으로 예약되었습니다.');
+      }
+    } catch (e: unknown) {
+      await refetchDetail().catch(() => {});
+      alert(e instanceof Error ? e.message : '요청 처리 중 오류가 발생했습니다.');
+    } finally {
+      setActionLoading(false);
     }
-    else if (action === 'reserve') {
-      const res = await reserveBook(itemId);
-      await refetchDetail();
-      alert(res.message || '성공적으로 예약되었습니다.');
-    }
-  } catch (e: unknown) {
-    await refetchDetail().catch(() => {});
-    alert(e instanceof Error ? e.message : '요청 처리 중 오류가 발생했습니다.');
-  } finally {
-    setActionLoading(false);
-  }
-};
+  };
 
   if (isLoading) return <div>도서 정보를 불러오는 중입니다...</div>;
   if (error || !book) return <div>{error ?? '도서 정보를 찾을 수 없습니다.'}</div>;
@@ -139,7 +140,13 @@ export default function BookDetail() {
         />
       )}
 
-      {activeTab === 'review' && <ReviewSection bookId={book.bookId} />}
+      {activeTab === 'review' && (
+        <ReviewSection
+          bookId={book.bookId}
+          book={book}
+          setBook={setBook}
+        />
+      )}
     </S.DetailPageWrapper>
   );
 }

@@ -7,16 +7,17 @@ import like from '../../assets/like.svg'
 interface CommentListProps {
   comments: Comment[];
   onToggleLike: (commentId: string | number) => Promise<void>;
-  likedCommentIds: (number | string)[];
+  likedCommentIds: string[]; // ✅ string으로 통일
   onDeleteComment: (commentId: string | number) => Promise<void>;
   currentUserId: string;
 }
 
+const isTempId = (id: string | number) => typeof id === 'string' && id.startsWith('temp-');
+
 const formatRelativeTime = (dateString: string): string => {
   const commentDate = new Date(dateString).getTime();
   const now = Date.now();
-  const diffMilliseconds = now - commentDate;
-  const diffMinutes = Math.floor(diffMilliseconds / (1000 * 60));
+  const diffMinutes = Math.floor((now - commentDate) / (1000 * 60));
 
   const MINUTES_IN_HOUR = 60;
   const MINUTES_IN_DAY = 24 * MINUTES_IN_HOUR;
@@ -46,12 +47,17 @@ const CommentList: React.FC<CommentListProps> = ({
     <S.ListWrapper>
       <h2>리뷰 ({comments.length}개)</h2>
 
-      {comments.map((comment) => {
-        const isLiked = likedCommentIds.includes(comment.id);
-        const isMyComment = comment.userId === currentUserId;
+      {comments.map((comment, idx) => {
+        const id = comment.id;
+        const idStr = String(id ?? '');
+        const hasValidId = id !== undefined && id !== null && idStr !== '';
+        const temp = hasValidId && isTempId(id);
+
+        const isLiked = hasValidId ? likedCommentIds.includes(idStr) : false;
+        const isMyComment = String(comment.userId ?? '') === currentUserId;
 
         return (
-          <S.CommentItemWrapper key={comment.id}>
+          <S.CommentItemWrapper key={hasValidId ? idStr : `no-id-${idx}`}>
             <S.CommentItemContent>
               <S.UserProfileContent>
                 <S.UserProfile src={comment.profileImg || user} alt={`${comment.user}프로필`} />
@@ -66,13 +72,41 @@ const CommentList: React.FC<CommentListProps> = ({
                 <S.CommentText>{comment.text}</S.CommentText>
 
                 <S.CommentBottomContent>
-                  <S.LikeButton onClick={() => onToggleLike(comment.id)}>
+                  <S.LikeButton
+                    onClick={() => {
+                      if (!hasValidId) {
+                        alert('이 댓글은 ID가 없어 좋아요를 할 수 없습니다.');
+                        console.warn('No comment id:', comment);
+                        return;
+                      }
+                      if (temp) {
+                        alert('임시 댓글은 서버 동기화 후 좋아요가 가능합니다.');
+                        return;
+                      }
+                      onToggleLike(id);
+                    }}
+                    style={{ opacity: !hasValidId || temp ? 0.4 : 1 }}
+                  >
                     <S.Like $isLiked={isLiked} src={like} alt="좋아요" />
                     <S.LikeNumber>{comment.likes}</S.LikeNumber>
                   </S.LikeButton>
 
                   {isMyComment && (
-                    <S.DeleteButton onClick={() => onDeleteComment(comment.id)}>
+                    <S.DeleteButton
+                      onClick={() => {
+                        if (!hasValidId) {
+                          alert('이 댓글은 ID가 없어 삭제할 수 없습니다.');
+                          console.warn('No comment id:', comment);
+                          return;
+                        }
+                        if (temp) {
+                          alert('임시 댓글은 서버 동기화 후 삭제가 가능합니다.');
+                          return;
+                        }
+                        onDeleteComment(id);
+                      }}
+                      style={{ opacity: !hasValidId || temp ? 0.4 : 1 }}
+                    >
                       삭제
                     </S.DeleteButton>
                   )}

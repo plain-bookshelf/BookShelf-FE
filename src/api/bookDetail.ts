@@ -1,4 +1,4 @@
-import type { BookDetailData, CollectionItem } from "../types/bookTypes";
+import type { BookDetailData, CollectionItem, Comment } from "../types/bookTypes";
 import axiosInstance from "./apiClient";
 import { getAccessToken } from "../utils/tokenService";
 import undefindImg from "../assets/undefindImg.png";
@@ -39,8 +39,37 @@ const mapCollection = (dtos: CollectionInfoDto[]): CollectionItem[] =>
     dueDate: undefined,
   }));
 
+  const mapReviewDtosToComments = (dtos: any[] = []): Comment[] => {
+  return dtos.map((r, idx) => {
+    const id =
+      r?.id ??
+      r?.commentId ??
+      r?.comment_id ??
+      r?.reviewId ??
+      r?.review_id ??
+      r?.reviewID;
+
+    return {
+      // id가 없으면 좋아요/삭제에서 막히니까 임시라도 넣되,
+      // CommentList에서 id 없는 케이스를 막도록 이미 방어 코드가 있으면 더 안전함
+      id: (typeof id === "number" || typeof id === "string") ? id : `temp-${Date.now()}-${idx}`,
+
+      userId: String(r?.userId ?? r?.member_id ?? r?.memberId ?? ""),
+      user: String(r?.user ?? r?.member_nick_name ?? r?.nickName ?? r?.name ?? "사용자"),
+      text: String(r?.text ?? r?.content ?? r?.review_content ?? ""),
+      date: String(r?.date ?? r?.created_at ?? r?.createdAt ?? new Date().toISOString()),
+      likes: Number(r?.likes ?? r?.like_count ?? r?.likeCount ?? 0),
+      profileImg: r?.profileImg ?? r?.member_profile ?? r?.profile_url ?? undefined,
+    };
+  });
+};
+
 const mapToBookDetailData = (data: BookDetailApiData): BookDetailData => {
   const collection = mapCollection(data.collection_information_response_dtos);
+
+  const reviews: Comment[] = Array.isArray(data.review_response_dtos)
+  ? mapReviewDtosToComments(data.review_response_dtos)
+  : [];
 
   return {
     bookId: data.book_id,
@@ -54,15 +83,10 @@ const mapToBookDetailData = (data: BookDetailApiData): BookDetailData => {
     summary: data.book_introduction ?? "등록된 소개가 없습니다.",
     categories: data.book_type ? [data.book_type] : [],
     collection,
+    review_response_dtos: reviews,
   };
 };
 
-/**
- * 서버 진실 기반 상세 조회
- * - 토큰이 없으면 즉시 NO_TOKEN 에러
- * - 성공 구조 검증 엄격
- * - UI는 이 반환값만으로 갱신됨 (호출부가 로컬 변형 금지)
- */
 export const getBookDetail = async (
   bookId: number | string
 ): Promise<BookDetailData> => {
@@ -70,7 +94,6 @@ export const getBookDetail = async (
 
   const token = getAccessToken();
   if (!token) {
-    // 호출부에서 로그인 페이지로 안전하게 이동하도록 고의 에러
     throw new Error("NO_TOKEN");
   }
 
@@ -100,4 +123,3 @@ export const getBookDetail = async (
     throw new Error("FETCH_FAILED");
   }
 };
-
