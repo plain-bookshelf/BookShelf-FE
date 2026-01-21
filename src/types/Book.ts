@@ -4,8 +4,7 @@ export type Book = {
   author: string;
   book_type: string;
   book_image_url: string;
-  rank?: number;
-  onClick: () => void
+  rank?: number
 }
 
 export type SearchBook = {

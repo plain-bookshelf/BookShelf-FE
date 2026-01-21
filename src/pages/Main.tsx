@@ -1,5 +1,3 @@
-
-import { useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar/SearchBar"
 import * as B from "../components/Book/Book"
 import type { Book, SearchBook } from "../types/Book"
@@ -20,8 +18,6 @@ export default function Main() {
   const [search, setSearch] = useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
   const [loading, setLoading] = useState(true);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -84,7 +80,6 @@ export default function Main() {
             author={e.author}
             book_type={e.book_type}
             book_image_url={e.book_image}
-            onClick={() => navigate(`books/${e.id}`)}
           />
         ))}
         </B.BookList>
@@ -108,7 +103,6 @@ export default function Main() {
             author={e.author}
             book_type={e.book_type}
             book_image_url={e.book_image_url}
-            onClick={() => navigate(`books/${e.id}`)}
           />
         ))}
       </B.BookList>
@@ -129,7 +123,6 @@ export default function Main() {
             author={e.author}
             book_type={e.book_type}
             book_image_url={e.book_image_url}
-            onClick={() => navigate(`books/${e.id}`)}
           />
         ))}
       </B.BookList>

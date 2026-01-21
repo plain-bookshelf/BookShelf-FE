@@ -35,7 +35,7 @@ const mapCollection = (dtos: CollectionInfoDto[]): CollectionItem[] =>
     id: item.registration_number,
     library: item.affiliation,
     callNumber: item.call_number,
-    status: item.rental_status,
+    status: item.rental_status ?  "대출가능" : "대출중",
     dueDate: undefined,
   }));
 
@@ -82,8 +82,7 @@ export const getBookDetail = async (
       console.error("[getBookDetail] INVALID_RESPONSE:", res.data);
       throw new Error("INVALID_RESPONSE");
     }
-    
-    console.log(res.data.data)
+
     return mapToBookDetailData(res.data.data);
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {

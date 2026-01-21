@@ -1,4 +1,4 @@
-import * as S from "../Book/style";
+import * as S from "./style";
 import type { Book } from "../../types/Book";
 import type { ReactNode } from "react";
 import { useRef, useState, useEffect } from "react";
@@ -64,7 +64,7 @@ export const BookList: React.FC<Props> = ({searchTitle, BookListTitle, children}
   </>)
 }
 
-export function Book({book_name, book_type, book_image_url, author, onClick}: Book) {
+export function Book({book_name, book_type, book_image_url, author}: Book) {
   const book_type_split = book_type.split(">");
   let category = book_type_split[book_type_split.length-1];
   if(category.length> 8){
@@ -82,7 +82,7 @@ export function Book({book_name, book_type, book_image_url, author, onClick}: Bo
   }
 
   return(<>
-    <S.Book onClick={onClick}>
+    <S.Book>
       <img style={{height: 300}} src={book_image_url}/>
       <S.BookInfo>
         <S.BookTitle>{title}</S.BookTitle>
@@ -96,7 +96,7 @@ export function Book({book_name, book_type, book_image_url, author, onClick}: Bo
   </>)
 }
 
-export function Popular({book_name, book_type, book_image_url, author, rank, onClick}: Book) {
+export function Popular({book_name, book_type, book_image_url, author, rank}: Book) {
   const book_type_split = book_type.split(">");
   let category = book_type_split[book_type_split.length-1];
   if(category.length> 8){
@@ -120,7 +120,7 @@ export function Popular({book_name, book_type, book_image_url, author, rank, onC
   }
 
   return(<>
-    <S.Book onClick={onClick}>
+    <S.Book>
       <img style={{height: 300}} src={book_image_url}/>
       <S.RankBox>
         <BookNumber style={{margin: 0}}>{rank}</BookNumber>

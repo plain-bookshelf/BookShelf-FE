@@ -17,13 +17,12 @@ export default function RecommandList() {
     const fetchData = async () => {
       try{
         console.log("요청 보냄");
-        console.log(user.nickName);
-        const res = await postRecommand(user.nickName);
+        const res = await postRecommand(user.name);
         setRecommandBooks(res.data);
         setloading(false);
       } catch(error) {
         console.error(error);
-      }
+      } 
     }
 
     fetchData();

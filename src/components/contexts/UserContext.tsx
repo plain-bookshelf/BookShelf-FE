@@ -7,7 +7,7 @@ export const UserContext = createContext<UserContextType>({ user: {id: "", name:
 
 /*{ children } 구조분해 할당 받고 { children: ReactNode } 구조분해 할당 받은 children이 ReactNode라고 명시 {} 로 둘다 감싼 건 둘다 객체임을 명시*/
 export const Provider = ({ children }: { children: ReactNode }) => { 
-  const [user, setUser] = useState<UserInfo>({ id: "", name: "abc100" ,nickName: "", img: "", email: "" });
+  const [user, setUser] = useState<UserInfo>({ id: "", name: "" ,nickName: "", img: "", email: "" });
 
   const updateUser = (newData: UserInfo) => setUser(newData);
 

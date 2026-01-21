@@ -7,9 +7,9 @@ import like from '../../assets/like.svg'
 
 interface CommentListProps {
   comments: Comment[];
-  onToggleLike: (commnetId: number) => Promise<void>; 
+  onToggleLike: (commnetId: string | number) => Promise<void>; 
   likedCommentIds: (number | string)[]; 
-  onDeleteComment: (commentId: number) => Promise<void>;
+  onDeleteComment: (commentId: string | number) => Promise<void>;
   currentUserId: string;
 }
 
