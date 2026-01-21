@@ -12,15 +12,33 @@ interface ReviewSectionProps {
   bookId: number | string;
 }
 
-/** 임시 댓글 여부 판정 (서버 ID 동기화 전 보호용) */
 const isTempId = (id: string | number) => typeof id === 'string' && id.startsWith('temp-');
 
+const extractCommentId = (res: any): string | number | undefined => {
+  const candidates = [
+    res?.data,
+    res?.data?.data,
+    res?.data?.commentId,
+    res?.data?.data?.commentId,
+    res?.data?.id,
+    res?.data?.data?.id,
+    res?.commentId,
+    res?.id,
+  ];
+
+  for (const v of candidates) {
+    if (typeof v === 'number' || typeof v === 'string') return v;
+  }
+  return undefined;
+};
+
 const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
-  const { user, setUser } = useUser();            // 전역 유저 정보(Context)
+  const { user, setUser } = useUser();
   const [comments, setComments] = useState<Comment[]>([]);
   const [likedCommentIds, setLikedCommentIds] = useState<(number | string)[]>([]);
 
-  /** 마운트/로그인 후 내 정보 최신화 (닉네임/이미지 등) */
+  const currentUserId = user?.id != null ? String(user.id) : '';
+
   useEffect(() => {
     const syncMyInfo = async () => {
       try {
@@ -35,124 +53,121 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
           email: payload.email ?? user.email ?? '',
         });
       } catch (e) {
-        console.warn('getMyInfo 실패:', e); // 실패해도 치명적이지 않으니 경고만
+        console.warn('getMyInfo 실패:', e);
       }
     };
     syncMyInfo();
-  }, [user?.id]);
+  }, [user?.id, setUser]);
 
-  // 댓글 작성
+  // 댓글 작성 (서버 성공 후에만 UI 반영)
   const handleAddComment = async (newText: string) => {
-  const trimmed = newText.trim();
-  if (!trimmed) return;
+    const trimmed = newText.trim();
+    if (!trimmed) return;
 
-  try {
-    const res = await postCommentWrite(bookId, trimmed);
+    if (!user?.id) {
+      alert('로그인 후 댓글 작성이 가능합니다.');
+      return;
+    }
 
-    const commentIdFromServer = typeof res.data === "number"
-        ? res.data
-        : (res.data as any)?.commentId; 
+    try {
+      const res = await postCommentWrite(bookId, trimmed);
+      const commentIdFromServer = extractCommentId(res);
 
-    if (commentIdFromServer) {
-      // commentId를 받았으면 바로 추가 (temp-id 필요없음)
+      if (!commentIdFromServer) {
+        alert('댓글은 작성되었지만 ID를 받지 못해 목록 반영이 어렵습니다. 새로고침 후 확인해 주세요.');
+        return;
+      }
+
       const newComment: Comment = {
         id: commentIdFromServer,
-        userId: user.id,
-        user: user.nickName || user.name,
+        userId: String(user.id),
+        user: user.nickName || user.name || '사용자',
         text: trimmed,
         date: new Date().toISOString(),
         likes: 0,
         profileImg: user.img || userProfile,
       };
 
-      setComments(prev => [newComment, ...prev]);
+      setComments((prev) => [newComment, ...prev]);
+    } catch (e: any) {
+      console.error('댓글 작성 실패:', e);
+      alert(e?.message || '댓글 작성 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 좋아요 (낙관적 업데이트 제거: 서버 성공 후 UI 반영)
+  const handleToggleLike = async (commentId: string | number) => {
+    if (!user?.id) {
+      alert('로그인 후 좋아요가 가능합니다.');
       return;
     }
-
-  } catch (e: any) {
-    console.error("댓글 작성 실패:", e);
-    alert(e.message || "댓글 작성 중 오류가 발생했습니다.");
-  }
-};
-
-
-  // 좋아요 토글
-  const handleToggleLike = async (commentId: string | number) => {
     if (isTempId(commentId)) {
       alert('방금 작성한 댓글은 서버 동기화 후 좋아요가 가능합니다. 새로고침 후 이용해주세요.');
       return;
     }
+
     const isCurrentlyLiked = likedCommentIds.includes(commentId);
-    const target = comments.find(c => c.id === commentId);
-    if (!target) return;
 
-    const oldLikes = target.likes;
-
-    //  UI 낙관적 업데이트
-    setLikedCommentIds(prev =>
-      isCurrentlyLiked ? prev.filter(id => id !== commentId) : [...prev, commentId],
-    );
-    setComments(prev =>
-      prev.map(c =>
-        c.id === commentId
-          ? { ...c, likes: isCurrentlyLiked ? Math.max(0, c.likes - 1) : c.likes + 1 }
-          : c,
-      ),
-    );
-
-    // 서버 요청
     try {
       const res = await postCommentLike(commentId);
-      if (res.data !== true) throw new Error('좋아요 처리 결과를 확인할 수 없습니다.');
-    } catch (e: any) {
-      console.error('좋아요 요청 실패, 롤백:', e);
-      alert(e.message || '좋아요 처리 중 오류가 발생했습니다.');
+      if (res?.data !== true) throw new Error('좋아요 처리 결과를 확인할 수 없습니다.');
 
-      //롤백
-      setLikedCommentIds(prev =>
-        isCurrentlyLiked ? [...prev, commentId] : prev.filter(id => id !== commentId),
+      // ✅ 성공 후에만 반영
+      setLikedCommentIds((prev) =>
+        isCurrentlyLiked ? prev.filter((id) => id !== commentId) : [...prev, commentId],
       );
-      setComments(prev => prev.map(c => (c.id === commentId ? { ...c, likes: oldLikes } : c)));
+
+      setComments((prev) =>
+        prev.map((c) =>
+          c.id === commentId
+            ? { ...c, likes: isCurrentlyLiked ? Math.max(0, c.likes - 1) : c.likes + 1 }
+            : c,
+        ),
+      );
+    } catch (e: any) {
+      console.error('좋아요 처리 실패:', e);
+      alert(e?.message || '좋아요 처리 중 오류가 발생했습니다.');
     }
   };
 
-  //  댓글 삭제
+  // 댓글 삭제 (서버 성공 후 UI 반영)
   const onDeleteComment = async (commentId: string | number) => {
+    if (!user?.id) {
+      alert('로그인 후 삭제가 가능합니다.');
+      return;
+    }
     if (isTempId(commentId)) {
       alert('방금 작성한 댓글은 서버 동기화 후 삭제가 가능합니다. 새로고침 후 이용해주세요.');
       return;
     }
+
     if (!window.confirm('정말로 이 댓글을 삭제하시겠습니까?')) return;
 
-    const originalComments = [...comments];
     try {
-      //  UI에서 먼저 제거
-      setComments(prev => prev.filter(c => c.id !== commentId));
-
-      //  서버 호출
       await deleteComment(commentId);
-      alert('댓글이 성공적으로 삭제되었습니다.');
 
-      //  좋아요 목록에서도 제거
-      setLikedCommentIds(prevIds => prevIds.filter(id => id !== commentId));
+      // ✅ 성공 후에만 반영
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+      setLikedCommentIds((prev) => prev.filter((id) => id !== commentId));
+
+      alert('댓글이 성공적으로 삭제되었습니다.');
     } catch (e: any) {
-      console.error('댓글 삭제 중 오류 발생 - 롤백:', e);
-      alert(e.message || '댓글 삭제 중 오류가 발생했습니다.');
-      setComments(originalComments); // 롤백
+      console.error('댓글 삭제 실패:', e);
+      alert(e?.message || '댓글 삭제 중 오류가 발생했습니다.');
     }
   };
 
   return (
     <S.CollectionContainer>
       <div style={{ width: '1440px', padding: '20px 0' }}>
-        <CommentForm onAddComment={handleAddComment} />
+        <CommentForm onAddComment={handleAddComment} disabled={!user?.id} />
         <S.Divider />
         <CommentList
           comments={comments}
           onToggleLike={handleToggleLike}
           likedCommentIds={likedCommentIds}
           onDeleteComment={onDeleteComment}
-          currentUserId={user.id}
+          currentUserId={currentUserId}
         />
       </div>
     </S.CollectionContainer>
