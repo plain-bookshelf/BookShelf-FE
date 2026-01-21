@@ -9,6 +9,7 @@ import { getBookSearch, getMain } from "../api/main"
 import { useUser } from "../components/contexts/UserContext"
 import Loading from "../components/loading/loading"
 import { setUserId } from "../utils/tokenService"
+import { useNavigate } from "react-router-dom"
 
 export default function Main() {
   const { user, setUser } = useUser();
@@ -18,6 +19,8 @@ export default function Main() {
   const [search, setSearch] = useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,6 +83,7 @@ export default function Main() {
             author={e.author}
             book_type={e.book_type}
             book_image_url={e.book_image}
+            onClick={() => navigate(`books/${e.id}`)}
           />
         ))}
         </B.BookList>
@@ -103,6 +107,7 @@ export default function Main() {
             author={e.author}
             book_type={e.book_type}
             book_image_url={e.book_image_url}
+            onClick={() => navigate(`books/${e.id}`)}
           />
         ))}
       </B.BookList>
@@ -123,6 +128,7 @@ export default function Main() {
             author={e.author}
             book_type={e.book_type}
             book_image_url={e.book_image_url}
+            onClick={() => navigate(`books/${e.id}`)}
           />
         ))}
       </B.BookList>
