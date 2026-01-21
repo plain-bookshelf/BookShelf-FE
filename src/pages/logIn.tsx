@@ -39,7 +39,7 @@ export default function LogIn() {
       });
 
       // 🔑 여기서 꼭 저장해야 함
-      setTokens(tokenData); // rememberMe 옵션 있으면 true/false로 분기
+      setTokens(tokenData, false); // rememberMe 옵션 있으면 true/false로 분기
 
       navigate("/");
     } catch (err: any) {

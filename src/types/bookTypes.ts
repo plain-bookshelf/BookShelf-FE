@@ -7,7 +7,7 @@ export type CollectionStatus =
 export interface CollectionItem {
   id: string; // 등록번호
   library: string; // 도서관
-  status: boolean;
+  status: '대출중' | '대출가능' | '예약중';
   dueDate?: string; // 반납 예정일 (대출중일 경우)
   callNumber: string; // 청구기호
 }
