@@ -35,7 +35,7 @@ const mapCollection = (dtos: CollectionInfoDto[]): CollectionItem[] =>
     id: item.registration_number,
     library: item.affiliation,
     callNumber: item.call_number,
-    status: item.rental_status ?  "대출가능" : "대출중",
+    status: item.rental_status,
     dueDate: undefined,
   }));
 
