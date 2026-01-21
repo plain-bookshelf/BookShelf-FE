@@ -36,15 +36,17 @@ const CollectionTable: React.FC<CollectionTableProps> = ({ items, onAction }) =>
         </S.TableHead>
         <S.TableBody>
           {items.map((item) => {
-            const isLoaned = item.status === true;
-            const isLoanable = item.status === false;
+            const isLoaned = item.status === '대출중';
+            const isLoanable = item.status === '대출가능';
+            // const isLoaned = item.status === true;
+            // const isLoanable = item.status === false;
             const isLoading = loadingId === item.id;
 
             const loanType: 'primary' | 'secondary' | 'disabled' =
               isLoanable && !isLoading ? 'primary' : 'disabled';
             const reserveType: 'primary' | 'secondary' | 'disabled' =
               isLoaned && !isLoading ? 'secondary' : 'disabled';
-
+            
             return (
               <tr key={item.id}>
                 <td>{item.library}</td>

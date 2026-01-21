@@ -1,10 +1,10 @@
 
 import { useNavigate } from "react-router-dom";
-import SearchBar from "../components/searchBar/SearchBar"
-import * as B from "../components/book/Book"
+import SearchBar from "../components/SearchBar/SearchBar"
+import * as B from "../components/Book/Book"
 import type { Book, SearchBook } from "../types/Book"
 import { useEffect, useState } from "react"
-import { Line, LineContainer } from "../components/book/style"
+import { Line, LineContainer } from "../components/Book/style"
 import styled from "styled-components"
 import searchResult from "../assets/searchResult.png"
 import { getBookSearch, getMain } from "../api/main"

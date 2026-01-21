@@ -1,4 +1,4 @@
-import * as S from "./style";
+import * as S from "../Book/style";
 import type { Book } from "../../types/Book";
 import type { ReactNode } from "react";
 import { useRef, useState, useEffect } from "react";

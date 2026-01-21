@@ -3,7 +3,7 @@ import styled from "styled-components";
 import PaginationBar from "../components/pagination/PaginationBar";
 import { useList } from "../components/contexts/BorrowListContext";
 import { useState, useEffect } from "react";
-import SearchBar from "../components/searchBar/SearchBar";
+import SearchBar from "../components/SearchBar/SearchBar";
 import { getOverdueList, getRentalList, getUserSearch } from "../api/manage";
 
 export default function BorrowList() {
