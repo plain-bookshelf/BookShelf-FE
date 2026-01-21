@@ -64,7 +64,7 @@ export const BookList: React.FC<Props> = ({searchTitle, BookListTitle, children}
   </>)
 }
 
-export function Book({book_name, book_type, book_image_url, author}: Book) {
+export function Book({book_name, book_type, book_image_url, author, onClick}: Book) {
   const book_type_split = book_type.split(">");
   let category = book_type_split[book_type_split.length-1];
   if(category.length> 8){
@@ -82,7 +82,7 @@ export function Book({book_name, book_type, book_image_url, author}: Book) {
   }
 
   return(<>
-    <S.Book>
+    <S.Book onClick={onClick}>
       <img style={{height: 300}} src={book_image_url}/>
       <S.BookInfo>
         <S.BookTitle>{title}</S.BookTitle>
