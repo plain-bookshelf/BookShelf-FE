@@ -203,6 +203,7 @@ export const TableBody = styled.tbody`
     font-size: 16px;
   }
 `
+/* export const StatusCell = styled.td<{$status: boolean}>` */
 export const StatusCell = styled.td<{$status: '대출중' | '대출가능' | '예약중'}>`
   font-weight: bold;
   color: ${(props) => {

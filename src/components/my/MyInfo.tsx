@@ -39,6 +39,7 @@ export default function MyProfile() {
         setUser({...user, nickName: res.data.data.nick_name, img: res.data.data.profile});
         setStatistics(res.data.data.one_month_statistics);
 
+        console.log('유저 이름: ', user.name)
         const rentalBook = res.data.data.rental_book;
 
         let borrowBook = rentalBook.filter((e: MyBook) => !e.is_over_due);

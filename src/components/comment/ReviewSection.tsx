@@ -12,15 +12,11 @@ interface ReviewSectionProps {
   bookId: number | string;
 }
 
-/** 임시 댓글 여부 판정 (서버 ID 동기화 전 보호용) */
-const isTempId = (id: string | number) => typeof id === 'string' && id.startsWith('temp-');
-
 const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
-  const { user, setUser } = useUser();            // 전역 유저 정보(Context)
+  const { user, setUser } = useUser();
   const [comments, setComments] = useState<Comment[]>([]);
-  const [likedCommentIds, setLikedCommentIds] = useState<(number | string)[]>([]);
+  const [likedCommentIds, setLikedCommentIds] = useState<number[]>([]);
 
-  /** 마운트/로그인 후 내 정보 최신화 (닉네임/이미지 등) */
   useEffect(() => {
     const syncMyInfo = async () => {
       try {
@@ -35,7 +31,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
           email: payload.email ?? user.email ?? '',
         });
       } catch (e) {
-        console.warn('getMyInfo 실패:', e); // 실패해도 치명적이지 않으니 경고만
+        console.warn('getMyInfo 실패:', e);
       }
     };
     syncMyInfo();
@@ -43,18 +39,27 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
 
   // 댓글 작성
   const handleAddComment = async (newText: string) => {
-  const trimmed = newText.trim();
-  if (!trimmed) return;
+    const trimmed = newText.trim();
+    if (!trimmed) return;
 
-  try {
-    const res = await postCommentWrite(bookId, trimmed);
+    try {
+      const res = await postCommentWrite(bookId, trimmed);
 
-    const commentIdFromServer = typeof res.data === "number"
-        ? res.data
-        : (res.data as any)?.commentId; 
+      // 서버가 number 또는 { commentId } 형태로 내려주는 케이스 모두 대응
+      const raw = res?.data;
+      const commentIdFromServer =
+        typeof raw === 'number'
+          ? raw
+          : typeof raw?.commentId === 'number'
+            ? raw.commentId
+            : typeof raw?.commentId === 'string'
+              ? Number(raw.commentId)
+              : undefined;
 
-    if (commentIdFromServer) {
-      // commentId를 받았으면 바로 추가 (temp-id 필요없음)
+      if (!commentIdFromServer || Number.isNaN(commentIdFromServer)) {
+        throw new Error('서버에서 commentId를 받지 못했습니다.');
+      }
+
       const newComment: Comment = {
         id: commentIdFromServer,
         userId: user.id,
@@ -66,29 +71,21 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
       };
 
       setComments(prev => [newComment, ...prev]);
-      return;
+    } catch (e: any) {
+      console.error('댓글 작성 실패:', e);
+      alert(e.message || '댓글 작성 중 오류가 발생했습니다.');
     }
-
-  } catch (e: any) {
-    console.error("댓글 작성 실패:", e);
-    alert(e.message || "댓글 작성 중 오류가 발생했습니다.");
-  }
-};
-
+  };
 
   // 좋아요 토글
-  const handleToggleLike = async (commentId: string | number) => {
-    if (isTempId(commentId)) {
-      alert('방금 작성한 댓글은 서버 동기화 후 좋아요가 가능합니다. 새로고침 후 이용해주세요.');
-      return;
-    }
+  const handleToggleLike = async (commentId: number) => {
     const isCurrentlyLiked = likedCommentIds.includes(commentId);
     const target = comments.find(c => c.id === commentId);
     if (!target) return;
 
     const oldLikes = target.likes;
 
-    //  UI 낙관적 업데이트
+    // UI 낙관적 업데이트
     setLikedCommentIds(prev =>
       isCurrentlyLiked ? prev.filter(id => id !== commentId) : [...prev, commentId],
     );
@@ -100,7 +97,6 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
       ),
     );
 
-    // 서버 요청
     try {
       const res = await postCommentLike(commentId);
       if (res.data !== true) throw new Error('좋아요 처리 결과를 확인할 수 없습니다.');
@@ -108,7 +104,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
       console.error('좋아요 요청 실패, 롤백:', e);
       alert(e.message || '좋아요 처리 중 오류가 발생했습니다.');
 
-      //롤백
+      // 롤백
       setLikedCommentIds(prev =>
         isCurrentlyLiked ? [...prev, commentId] : prev.filter(id => id !== commentId),
       );
@@ -116,29 +112,20 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
     }
   };
 
-  //  댓글 삭제
-  const onDeleteComment = async (commentId: string | number) => {
-    if (isTempId(commentId)) {
-      alert('방금 작성한 댓글은 서버 동기화 후 삭제가 가능합니다. 새로고침 후 이용해주세요.');
-      return;
-    }
+  // 댓글 삭제
+  const onDeleteComment = async (commentId: number) => {
     if (!window.confirm('정말로 이 댓글을 삭제하시겠습니까?')) return;
 
     const originalComments = [...comments];
     try {
-      //  UI에서 먼저 제거
       setComments(prev => prev.filter(c => c.id !== commentId));
-
-      //  서버 호출
       await deleteComment(commentId);
       alert('댓글이 성공적으로 삭제되었습니다.');
-
-      //  좋아요 목록에서도 제거
-      setLikedCommentIds(prevIds => prevIds.filter(id => id !== commentId));
+      setLikedCommentIds(prev => prev.filter(id => id !== commentId));
     } catch (e: any) {
       console.error('댓글 삭제 중 오류 발생 - 롤백:', e);
       alert(e.message || '댓글 삭제 중 오류가 발생했습니다.');
-      setComments(originalComments); // 롤백
+      setComments(originalComments);
     }
   };
 
@@ -152,7 +139,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ bookId }) => {
           onToggleLike={handleToggleLike}
           likedCommentIds={likedCommentIds}
           onDeleteComment={onDeleteComment}
-          currentUserId={user.id}
+          currentUserId={user?.id ?? ''}
         />
       </div>
     </S.CollectionContainer>
